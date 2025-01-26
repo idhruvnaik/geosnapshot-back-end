@@ -1,5 +1,5 @@
 class Order < ApplicationRecord
-  enum status: { pending: 'pending', inprogress: 'inprogress', ready: 'ready', canceled: 'canceled'}
+  enum status: { pending: "pending", inprogress: "inprogress", ready: "ready", canceled: "canceled" }
 
   before_create :generate_token
 
@@ -9,6 +9,6 @@ class Order < ApplicationRecord
   private
 
   def generate_token
-      self.token = SecureRandom.hex(10)
+    self.token = SecureRandom.hex(10)
   end
 end

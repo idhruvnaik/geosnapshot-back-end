@@ -1,5 +1,5 @@
 class Food::Item < ApplicationRecord
-  enum status: { active: 'active', inactive: 'inactive'}
+  enum status: { active: "active", inactive: "inactive" }
 
   before_create :generate_token
 
@@ -8,6 +8,6 @@ class Food::Item < ApplicationRecord
   private
 
   def generate_token
-      self.token = SecureRandom.hex(10)
+    self.token = SecureRandom.hex(10)
   end
 end

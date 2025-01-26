@@ -1,13 +1,15 @@
 class Serving::Table < ApplicationRecord
-    enum status: { active: 'active', inactive: 'inactive'}
+  enum status: { active: "active", inactive: "inactive" }
 
-    before_create :generate_token
+  before_create :generate_token
 
-    has_many :orders, class_name: "Order", foreign_key: :serving_table_id
+  scope :active, lambda { where(status: "active") }
 
-    private
+  has_many :orders, class_name: "Order", foreign_key: :serving_table_id
 
-    def generate_token
-        self.token = SecureRandom.hex(10)
-    end
+  private
+
+  def generate_token
+    self.token = SecureRandom.hex(10)
+  end
 end

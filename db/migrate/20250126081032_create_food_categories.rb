@@ -7,7 +7,7 @@ class CreateFoodCategories < ActiveRecord::Migration[7.1]
       t.text :description
       t.string :image
       t.string :token
-      t.enum :status, enum_type: :food_category_status, null: false, default: 'inactive'
+      t.enum :status, enum_type: :food_category_status, null: false, default: "inactive"
 
       t.timestamps
     end

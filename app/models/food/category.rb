@@ -1,13 +1,13 @@
 class Food::Category < ApplicationRecord
-    enum status: { active: 'active', inactive: 'inactive'}
+  enum status: { active: "active", inactive: "inactive" }
 
-    before_create :generate_token
+  before_create :generate_token
 
-    has_many :items, class_name: "Food::Item", foreign_key: :food_category_id
-    
-    private
+  has_many :items, class_name: "Food::Item", foreign_key: :food_category_id
 
-    def generate_token
-        self.token = SecureRandom.hex(10)
-    end
+  private
+
+  def generate_token
+    self.token = SecureRandom.hex(10)
+  end
 end

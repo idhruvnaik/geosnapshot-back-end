@@ -7,4 +7,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  namespace :serving_table do
+    match "list", via: [:get, :options]
+  end
 end

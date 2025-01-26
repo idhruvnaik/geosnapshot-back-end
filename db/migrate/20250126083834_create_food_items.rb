@@ -5,7 +5,7 @@ class CreateFoodItems < ActiveRecord::Migration[7.1]
     create_table :food_items do |t|
       t.string :name
       t.string :token
-      t.enum :status, enum_type: :food_item_status, null: false, default: 'inactive'
+      t.enum :status, enum_type: :food_item_status, null: false, default: "inactive"
       t.text :description
       t.string :serving
       t.references :food_category, null: false, foreign_key: true
