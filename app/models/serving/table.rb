@@ -3,6 +3,8 @@ class Serving::Table < ApplicationRecord
 
     before_create :generate_token
 
+    has_many :orders, class_name: "Order", foreign_key: :serving_table_id
+
     private
 
     def generate_token

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_26_083834) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_26_105501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,6 +18,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_26_083834) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "food_category_status", ["active", "inactive"]
   create_enum "food_item_status", ["active", "inactive"]
+  create_enum "order_status", ["pending", "inprogress", "ready", "cancel"]
   create_enum "serving_table_status", ["active", "inactive"]
 
   create_table "food_categories", force: :cascade do |t|
@@ -43,6 +44,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_26_083834) do
     t.index ["food_category_id"], name: "index_food_items_on_food_category_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.string "token"
+    t.bigint "serving_table_id", null: false
+    t.enum "status", default: "pending", null: false, enum_type: "order_status"
+    t.float "total_price"
+    t.string "estimated_time"
+    t.datetime "submission_time"
+    t.integer "sequence"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["serving_table_id"], name: "index_orders_on_serving_table_id"
+  end
+
   create_table "serving_tables", force: :cascade do |t|
     t.string "token"
     t.string "name"
@@ -53,4 +67,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_26_083834) do
   end
 
   add_foreign_key "food_items", "food_categories"
+  add_foreign_key "orders", "serving_tables"
 end
