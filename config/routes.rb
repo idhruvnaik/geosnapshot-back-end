@@ -16,5 +16,9 @@ Rails.application.routes.draw do
     namespace :category do
       match "list", via: [:get, :options]
     end
+
+    namespace :item do
+      match "list", via: [:get, :options]
+    end
   end
 end

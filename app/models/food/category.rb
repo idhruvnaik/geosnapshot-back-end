@@ -3,7 +3,7 @@ class Food::Category < ApplicationRecord
 
   before_create :generate_token
 
-  has_many :items, class_name: "Food::Item", foreign_key: :food_category_id
+  has_many :food_items, class_name: "Food::Item", foreign_key: :food_category_id
 
   private
 
