@@ -1,8 +1,10 @@
-class ServingTableController < ApplicationController
+class Food::CategoryController < ApplicationController
+  before_action :authenticate
+
   def list
     begin
-      instance = Table::Manager.new("active")
-      list = instance.list()
+      object = Food::CategoryService::Manager.new()
+      list = object.list()
 
       render_success_response list
     rescue => error

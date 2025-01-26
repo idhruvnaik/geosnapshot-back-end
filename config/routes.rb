@@ -11,4 +11,10 @@ Rails.application.routes.draw do
   namespace :serving_table do
     match "list", via: [:get, :options]
   end
+
+  namespace :food do
+    namespace :category do
+      match "list", via: [:get, :options]
+    end
+  end
 end
