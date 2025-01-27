@@ -21,4 +21,9 @@ Rails.application.routes.draw do
       match "list", via: [:get, :options]
     end
   end
+
+  namespace :order do
+    match "place", via: [:post, :options]
+    match "list", via: [:get, :options]
+  end
 end

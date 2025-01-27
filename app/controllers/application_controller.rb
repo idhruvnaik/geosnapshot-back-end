@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :null_session
+
   def authenticate
     table_token = params.dig("table_token")
 
@@ -6,7 +8,9 @@ class ApplicationController < ActionController::Base
       return render_unauthorised_json("Unauthorized")
     end
 
-    unless ::Serving::Table.active.exists?(token: table_token)
+    @table = ::Serving::Table.active.find_by_token table_token
+
+    unless @table.present?
       return render_unauthorised_json("Unauthorized")
     end
   end
