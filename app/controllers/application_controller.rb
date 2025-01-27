@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
   def has_sufficient_params(params_list)
     params_list.each do |param|
       unless params[param].present?
-        render_error_json "#{param} is mandatory".camelize
+        render_500_json "#{param} is mandatory".camelize
         return false
       end
     end

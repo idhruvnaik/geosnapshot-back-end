@@ -18,7 +18,7 @@ class OrderController < ApplicationController
   end
 
   def list
-    unless has_sufficient_params(["table_token"])
+    unless has_sufficient_params(["table_token", "status"])
       return
     end
 
@@ -27,6 +27,38 @@ class OrderController < ApplicationController
       list = object.list()
 
       render_success_response list
+    rescue => error
+      puts error
+      render_500_json "Sorry !! Something went wrong"
+    end
+  end
+
+  def update_order_item
+    unless has_sufficient_params(["order_item_token", "quantity"])
+      return
+    end
+
+    begin
+      object = OrderService::Manager.new(@table, nil, params.dig("order_item_token"))
+      list = object.update_order_item(params)
+
+      render_success_response "Updated successfully !!"
+    rescue => error
+      puts error
+      render_500_json "Sorry !! Something went wrong"
+    end
+  end
+
+  def update_order
+    unless has_sufficient_params(["order_token", "status"])
+      return
+    end
+
+    begin
+      object = OrderService::Manager.new(@table, nil, params.dig("order_token"), nil)
+      list = object.update_order(params)
+
+      render_success_response "Updated successfully !!"
     rescue => error
       puts error
       render_500_json "Sorry !! Something went wrong"

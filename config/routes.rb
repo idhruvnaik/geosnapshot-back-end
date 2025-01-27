@@ -25,5 +25,7 @@ Rails.application.routes.draw do
   namespace :order do
     match "place", via: [:post, :options]
     match "list", via: [:get, :options]
+    match "update_order_item", via: [:post, :options]
+    match "update_order", via: [:post, :options]
   end
 end

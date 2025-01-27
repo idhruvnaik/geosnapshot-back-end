@@ -1,8 +1,22 @@
 module OrderService
   class Manager
-    def initialize(table, status = "pending")
+    def initialize(table, status = "pending", order_token = nil, order_item_token = nil)
       @table = table
       @status = status
+
+      if order_item_token.present?
+        @order_item = Order::Item.includes(:order).find_by_token order_item_token
+        if @order_item.nil?
+          raise "food item not found !!"
+        end
+      end
+
+      if order_token.present?
+        @order = Order.find_by_token order_token
+        if @order.nil?
+          raise "Order not found !!"
+        end
+      end
       puts "Initialized"
     end
 
@@ -61,7 +75,45 @@ module OrderService
       end
     end
 
-    def fetch_orders()
+    def update_order_item(params)
+      begin
+        ActiveRecord::Base.transaction do
+          order = @order_item&.order rescue nil
+          if order.nil?
+            raise 'Order not found !!'
+          end
+
+          if order.status != 'pending'
+            raise 'Sorry !! Order can not be updated now.'
+          end
+
+          quantity = params.dig("quantity").to_f.round(2)
+          @order_item.update(quantity: quantity)
+
+          return @order_item
+        end
+      rescue => error
+        puts error
+        raise error
+      end
+    end
+
+    def update_order(params)
+      begin
+        ActiveRecord::Base.transaction do
+          if @order.status != 'pending'
+            raise 'Sorry !! Order can not be updated now.'
+          end
+
+          status = params.dig("status")
+          @order.update(status: status)
+
+          return @order
+        end
+      rescue => error
+        puts error
+        raise error
+      end
     end
   end
 end
