@@ -39,7 +39,7 @@ class OrderController < ApplicationController
     end
 
     begin
-      object = OrderService::Manager.new(@table, nil, params.dig("order_item_token"))
+      object = OrderService::Manager.new(@table, nil, nil, params.dig("order_item_token"))
       list = object.update_order_item(params)
 
       render_success_response "Updated successfully !!"
@@ -59,6 +59,22 @@ class OrderController < ApplicationController
       list = object.update_order(params)
 
       render_success_response "Updated successfully !!"
+    rescue => error
+      puts error
+      render_500_json "Sorry !! Something went wrong"
+    end
+  end
+
+  def delete_order_item
+    unless has_sufficient_params(["order_item_token", "table_token"])
+      return
+    end
+
+    begin
+      object = OrderService::Manager.new(@table, nil, nil, params.dig("order_item_token"))
+      list = object.delete_order_item()
+
+      render_success_response "Deleted successfully !!"
     rescue => error
       puts error
       render_500_json "Sorry !! Something went wrong"

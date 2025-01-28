@@ -27,5 +27,6 @@ Rails.application.routes.draw do
     match "list", via: [:get, :options]
     match "update_order_item", via: [:post, :options]
     match "update_order", via: [:post, :options]
+    match "delete_order_item", via: [:delete, :options]
   end
 end
