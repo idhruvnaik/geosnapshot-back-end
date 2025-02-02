@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_26_112334) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_01_125428) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_26_112334) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "food_category_status", ["active", "inactive"]
   create_enum "food_item_status", ["active", "inactive"]
-  create_enum "order_status", ["pending", "inprogress", "cancel", "ready"]
+  create_enum "order_status", ["pending", "inprogress", "cancel", "ready", "canceled"]
   create_enum "serving_table_status", ["active", "inactive"]
 
   create_table "food_categories", force: :cascade do |t|
@@ -41,6 +41,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_26_112334) do
     t.string "image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "price", default: 0.0
     t.index ["food_category_id"], name: "index_food_items_on_food_category_id"
   end
 

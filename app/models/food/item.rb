@@ -1,4 +1,6 @@
 class Food::Item < ApplicationRecord
+  validates :price, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+
   enum status: { active: "active", inactive: "inactive" }
 
   before_create :generate_token

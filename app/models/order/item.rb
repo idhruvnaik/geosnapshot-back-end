@@ -8,13 +8,27 @@ class Order::Item < ApplicationRecord
   belongs_to :order, class_name: "Order", foreign_key: :order_id
 
   after_commit :update_total_price
+  after_destroy :delete_order # Use after_destroy instead of after_delete
 
   private
 
+  def delete_order
+    order_id = self.order_id
+
+    unless Order::Item.where(order_id: order_id).exists?
+      self.order&.destroy
+    end
+  end
+
   def update_total_price
-    total_price = self.order.order_items.sum('quantity * price')
-    total_price = total_price.round(2)
-    order.update!(total_price: total_price)
+    order_id = self.order_id
+    order = Order.find_by_id order_id
+    if order.present?
+      total_price = self.order.order_items.sum("quantity * price")
+      total_price = total_price.round(2)
+
+      order.update!(total_price: total_price)
+    end
   end
 
   def generate_token

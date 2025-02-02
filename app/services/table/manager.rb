@@ -12,7 +12,7 @@ module Table
 
         tables = Serving::Table.where(status: @status)
         tables&.each do |table|
-          response << { token: table&.token, name: table&.token }
+          response << { token: table&.token, name: table&.name }
         end
 
         return response

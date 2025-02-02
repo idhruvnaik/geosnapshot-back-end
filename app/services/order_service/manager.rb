@@ -1,8 +1,9 @@
 module OrderService
   class Manager
-    def initialize(table, status = "pending", order_token = nil, order_item_token = nil)
+    def initialize(table, status = "pending", order_token = nil, order_item_token = nil, allow_order_update = false)
       @table = table
       @status = status
+      @allow_order_update = allow_order_update
 
       if order_item_token.present?
         @order_item = Order::Item.includes(:order).find_by_token order_item_token
@@ -48,7 +49,11 @@ module OrderService
     def list()
       begin
         response = []
-        orders = Order.includes([order_items: :food_item]).where(status: @status, serving_table_id: @table&.id).order(:submission_time)
+        if @table.present?
+          orders = Order.includes([order_items: :food_item]).where(status: @status, serving_table_id: @table&.id).order(:submission_time)
+        else
+          orders = Order.includes([order_items: :food_item]).where(status: @status).order(:submission_time)
+        end
 
         orders&.each do |order|
           food_items = []
@@ -84,7 +89,11 @@ module OrderService
           end
 
           quantity = params.dig("quantity").to_i
-          @order_item.update(quantity: quantity)
+          if quantity === 0
+            @order_item.destroy
+          else
+            @order_item.update(quantity: quantity)
+          end
 
           return @order_item
         end
@@ -97,12 +106,16 @@ module OrderService
     def update_order(params)
       begin
         ActiveRecord::Base.transaction do
-          if @order.status != "pending"
+          if @order.status != "pending" && @allow_order_update === false
             raise "Sorry !! Order can not be updated now."
           end
 
           status = params.dig("status")
-          @order.update(status: status)
+          estimated_time = params.dig("estimated_time")
+
+          @order.status = status if status&.present?
+          @order.estimated_time = estimated_time if estimated_time&.present?
+          @order.save
 
           return @order
         end

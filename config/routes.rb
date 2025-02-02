@@ -29,4 +29,9 @@ Rails.application.routes.draw do
     match "update_order", via: [:post, :options]
     match "delete_order_item", via: [:delete, :options]
   end
+
+  namespace :kitchen do
+    match "list", via: [:get, :options]
+    match "update_order", via: [:post, :options]
+  end
 end

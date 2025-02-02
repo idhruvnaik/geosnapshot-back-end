@@ -55,13 +55,12 @@ class OrderController < ApplicationController
     end
 
     begin
-      object = OrderService::Manager.new(@table, nil, params.dig("order_token"), nil)
+      object = OrderService::Manager.new(@table, nil, params.dig("order_token"), nil, true)
       list = object.update_order(params)
 
       render_success_response "Updated successfully !!"
     rescue => error
-      puts error
-      render_500_json "Sorry !! Something went wrong"
+      render_500_json error
     end
   end
 

@@ -17,7 +17,7 @@ module Food
 
           food_items = @category.food_items
           food_items&.each do |food_item|
-            response << { name: food_item&.name, description: food_item&.description, image: food_item&.image, token: food_item&.token, serving: food_item&.serving }
+            response << { name: food_item&.name, description: food_item&.description, image: food_item&.image, food_token: food_item&.token, serving: food_item&.serving, price: food_item&.price }
           end
 
           return response
