@@ -9,7 +9,7 @@ namespace :data do
       i = 1
       4.times do
         i = i + 1
-        table = Serving::Table.create!(name: "Table #{i}", location: "Upper Deck", status: 'active')
+        table = Serving::Table.create!(name: "Table #{i}", location: "Upper Deck", status: "active")
       end
 
       10.times do
@@ -33,7 +33,6 @@ namespace :data do
           food_category_id: random_category.id,
         )
       end
-
     end
   end
 end

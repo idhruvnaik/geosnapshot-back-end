@@ -23,6 +23,8 @@ module OrderService
 
     def place(items = [])
       begin
+        order = nil
+
         ActiveRecord::Base.transaction do
           order = Order.create!(serving_table_id: @table&.id, status: "pending", estimated_time: "NA", submission_time: Time.now.utc, total_price: 0)
 
@@ -40,6 +42,9 @@ module OrderService
             end
           end
         end
+
+        order = order.reload
+        ActionCable.server.broadcast("orders_channel", OrderService::Manager.order_formatter(order)) # ? Broadcast to WS
       rescue => error
         ActiveRecord::Rollback
         raise error
@@ -56,17 +61,7 @@ module OrderService
         end
 
         orders&.each do |order|
-          food_items = []
-          order_items = order&.order_items
-
-          order_items&.each do |order_item|
-            food_item = order_item&.food_item rescue nil
-            if food_item.present?
-              food_items << { name: food_item&.name, description: food_item&.description, serving: food_item&.serving, image: food_item&.image, quantity: order_item&.quantity, price: order_item&.price, instructions: order_item&.instructions, order_item_token: order_item&.token }
-            end
-          end
-
-          response << { status: order&.status, total_price: order&.total_price, estimated_time: order&.estimated_time, submission_time: order&.submission_time, food_items: food_items, order_token: order&.token }
+          response << OrderService::Manager.order_formatter(order)
         end
 
         return response
@@ -78,6 +73,7 @@ module OrderService
 
     def update_order_item(params)
       begin
+        order = nil
         ActiveRecord::Base.transaction do
           order = @order_item&.order rescue nil
           if order.nil?
@@ -94,8 +90,13 @@ module OrderService
           else
             @order_item.update(quantity: quantity)
           end
+        end
 
-          return @order_item
+        if order.order_items.length === 0 # !! All the
+          ActionCable.server.broadcast("orders_channel", { state: "deleted", order_token: order.token }) # ? Broadcast to WS
+        else
+          order = order.reload
+          ActionCable.server.broadcast("orders_channel", OrderService::Manager.order_formatter(order)) # ? Broadcast to WS
         end
       rescue => error
         puts error
@@ -119,6 +120,10 @@ module OrderService
 
           return @order
         end
+
+        if @order.status === "pending"
+          ActionCable.server.broadcast("orders_channel", OrderService::Manager.order_formatter(@order)) # ? Broadcast to WS
+        end
       rescue => error
         puts error
         raise error
@@ -134,6 +139,20 @@ module OrderService
         puts error
         raise error
       end
+    end
+
+    def self.order_formatter(order)
+      food_items = []
+      order_items = order&.order_items
+
+      order_items&.each do |order_item|
+        food_item = order_item&.food_item rescue nil
+        if food_item.present?
+          food_items << { name: food_item&.name, description: food_item&.description, serving: food_item&.serving, image: food_item&.image, quantity: order_item&.quantity, price: order_item&.price, instructions: order_item&.instructions, order_item_token: order_item&.token }
+        end
+      end
+
+      return { status: order&.status, total_price: order&.total_price, estimated_time: order&.estimated_time, submission_time: order&.submission_time, food_items: food_items, order_token: order&.token }
     end
   end
 end
